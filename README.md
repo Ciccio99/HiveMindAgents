@@ -5,7 +5,7 @@ Project that allows the control of autonomous crowds and flocks
 
 ### Team
 - Alberto Scicali
-- Yeswanth Raja
+- Yeshwanth Raja
 
 # Propsal
 
