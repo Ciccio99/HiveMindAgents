@@ -13,8 +13,42 @@ public class BoidSubordinate : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate () {
+        _BoidMovementLoop ();
+	}
+
+    public void SetBoidManager (BoidManager bm) {
+        _boidManager = bm;
+    }
+
+    private void _BoidMovementLoop () {
+        var neighbors = _GetNeighbors ();
+
+        // Calculate neighbor forces
+        var finalForce = Vector3.zero;
+
+        finalForce += _CalculateCohesionForce (neighbors);
+        finalForce += _CalculateAlignmentForce (neighbors);
+        finalForce += _CalculateSeparationForce (neighbors);
+        finalForce += _CalculateLeaderForce ();
+
+      
+        // apply force to RB
+        if (float.IsNaN (finalForce.x) || float.IsNaN (finalForce.y) || float.IsNaN (finalForce.z)) 
+            finalForce = Vector3.zero;
+        
+        _rigidbody.AddForce (finalForce);
+
+        // set forward vector direction to current velocity
+        if (_rigidbody.velocity.normalized != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation (_rigidbody.velocity.normalized);
+        
+        _ClampMaxSpeed (); 
+    }
+
+    private GameObject[] _GetNeighbors () {
         // Get nieghbors
         var neighborColliders = Physics.OverlapSphere (transform.position, _boidManager.NeighborRange);
+
         var neighborList = new List<GameObject> ();
         foreach (var col in neighborColliders) {
             var go = col.gameObject;
@@ -27,36 +61,14 @@ public class BoidSubordinate : MonoBehaviour {
             }
         }
 
-        var neighbors = neighborList.ToArray ();
-        // Calculate neighbor forces
-        var finalForce = Vector3.zero;
+        return neighborList.ToArray ();
+    }
 
-        finalForce += _CalculateCohesionForce (neighbors).normalized * _boidManager.CohesionWeight;
-        finalForce += _CalculateAlignmentForce (neighbors).normalized * _boidManager.AlignmentWeight;
-        finalForce += _CalculateSeparationForce (neighbors).normalized * _boidManager.SeparationWeight;
-        finalForce += _CalculateLeaderForce ().normalized * _boidManager.LeadederWeight;
-
-        //Debug.Log (finalForce);
-        // apply force to RB
-        _rigidbody.AddForce (finalForce);
-
-        // set forward vector direction to current velocity
-        transform.rotation = Quaternion.LookRotation (_rigidbody.velocity.normalized);
-
+    private void _ClampMaxSpeed () {
         // Limit Speed
         if (Vector3.Magnitude (_rigidbody.velocity) > _boidManager.MaximumSpeed) {
             _rigidbody.velocity = _rigidbody.velocity.normalized * _boidManager.MaximumSpeed;
         }
-	}
-
-
-
-    public void SetBoidManager (BoidManager bm) {
-        _boidManager = bm;
-    }
-
-    private void _BoidMovementLoop () {
-        
     }
 
     private Vector3 _CalculateCohesionForce (GameObject[] neighbors) {
@@ -78,13 +90,27 @@ public class BoidSubordinate : MonoBehaviour {
         if (neighbors.Length == 0) return Vector3.zero;
 
         var repulsiveForce = Vector3.zero;
+        var avgDistance = 0f;
+        int tooCloseCount = 0;
 
         foreach (var boid in neighbors) {
-            float distance = Vector3.Magnitude (boid.transform.position - transform.position);
+            float distance = Mathf.Abs (Vector3.Magnitude (transform.position - boid.transform.position));
             if (distance < _boidManager.SeparationRange) {
                 repulsiveForce += transform.position - boid.transform.position;
+                avgDistance += distance;
+                tooCloseCount++;
             }
         }
+        // Return if there are no other boids within the separation range
+        if (tooCloseCount == 0) return Vector3.zero;
+
+        // Get avgs
+        repulsiveForce /= tooCloseCount;
+        avgDistance /= tooCloseCount;
+
+        var weightPercentage = 1f - (avgDistance / _boidManager.SeparationRange);
+
+        repulsiveForce = repulsiveForce.normalized * weightPercentage * _boidManager.SeparationWeight;
 
         return repulsiveForce;
     }
@@ -100,13 +126,17 @@ public class BoidSubordinate : MonoBehaviour {
 
         steerVector /= neighbors.Length;
 
-        return steerVector;
+        var steerForce = steerVector.normalized * _boidManager.AlignmentWeight;
+
+        return steerForce;
     }
 
     private Vector3 _CalculateLeaderForce () {
         if (_boidManager.BoidLeader == null)
             return Vector3.zero;
         
-        return (_boidManager.BoidLeader.transform.position - transform.position).normalized;
+        var leaderForce = (_boidManager.BoidLeader.transform.position - transform.position).normalized * _boidManager.LeadederWeight;
+
+        return leaderForce;
     }
 }

@@ -22,16 +22,19 @@ public class BoidManager : MonoBehaviour {
     [SerializeField]
     private float _boidMaximumSpeed = 10f;
     [SerializeField]
-    private GameObject _boidLeader, _boidPrefab;
+    private GameObject _boidLeader;
+    [SerializeField]
+    private GameObject[] _boidPrefabs;
     [SerializeField]
     private float _boidNeighborRange, _boidSeperationRange, _boidSeparationWeight, _boidAlignmentWeight, _boidCohesionWeight, _boidAvoidanceWeight, _boidLeaderWeight;
    
 
-    private GameObject[] _managedBoids;
+    private GameObject[] _managedBoidGOs;
+    private BoidSubordinate[] _managedBoidSubordinates;
 
     private void Awake () {
-        if (_boidPrefab == null)
-            throw new NullReferenceException ("BoidManager: Missing boid prefab reference...");
+        if (_boidPrefabs.Length == 0)
+            throw new NullReferenceException ("BoidManager: Missing boid prefab references...");
     }
 
     // Mono Functions
@@ -45,21 +48,33 @@ public class BoidManager : MonoBehaviour {
     }
 
     private void _CreateBoids () {
-        if (_managedBoids == null) {
-            _managedBoids = new GameObject[_boidCount];
-        }
+        if (_managedBoidGOs == null)
+            _managedBoidGOs = new GameObject[_boidCount];
+        if (_managedBoidSubordinates == null)
+            _managedBoidSubordinates = new BoidSubordinate[_boidCount];
 
         for (int i = 0; i < _boidCount; i++) {
-            var boid = Instantiate (_boidPrefab, transform.position, Quaternion.identity);
+            var prefab = _GetBoidPrefab ();
+            var boid = Instantiate (prefab, transform.position, Quaternion.identity);
             var boidSub = boid.AddComponent<BoidSubordinate> ();
+
             boidSub.SetBoidManager (this);
-            _managedBoids[i] = boid;
+
+            _managedBoidGOs[i] = boid;
+            _managedBoidSubordinates[i] = boidSub;
         }
     }
 
+    private GameObject _GetBoidPrefab (int index = -1) {
+        int randIndex = UnityEngine.Random.Range (0, _boidPrefabs.Length);
+        return _boidPrefabs[randIndex];
+    }
+
     private void _DestroyBoids () {
-        foreach (var boid in _managedBoids) {
+        foreach (var boid in _managedBoidGOs) {
             Destroy (boid);
         }
+        _managedBoidGOs = new GameObject[_boidCount];
+        _managedBoidSubordinates = new BoidSubordinate[_boidCount];
     }
 }
