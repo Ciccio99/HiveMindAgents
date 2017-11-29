@@ -54,10 +54,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4800510990835804}
   - component: {fileID: 54356777246780344}
-  - component: {fileID: 114596686885892498}
   - component: {fileID: 65042251500009470}
   m_Layer: 0
-  m_Name: Boid
+  m_Name: BoidSubordinate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -209,20 +208,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1.4472634}
   m_Center: {x: 0, y: 0, z: 0.22363168}
---- !u!114 &114596686885892498
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1629962606263392}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1c9f6a7af1a6480da77c0d9333515d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cohesionRadius: 10
-  _separationDistance: 4
-  _cohesionForce: 3
-  _separationForce: 4
-  _wayPointForce: 1
-  _velocityMax: 10
