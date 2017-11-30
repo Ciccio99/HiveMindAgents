@@ -38,7 +38,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4149505463116164}
   - component: {fileID: 54081637678261836}
-  - component: {fileID: 65810994697597488}
   m_Layer: 0
   m_Name: TropicalFish03
   m_TagString: Untagged
@@ -127,18 +126,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &65810994697597488
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1962713662846058}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.61824584, y: 3.1695504, z: 0.76597184}
-  m_Center: {x: 0.0038018823, y: -0.39271504, z: 0.1812958}
 --- !u!111 &111548658319701320
 Animation:
   m_ObjectHideFlags: 1

@@ -14,6 +14,7 @@ public class BoidManager : MonoBehaviour {
     public float AvoidanceWeight { get { return _boidAvoidanceWeight; } private set { _boidAvoidanceWeight = value; } }
     public float LeadederWeight { get { return _boidLeaderWeight; } private set { _boidLeaderWeight = value; } }
     public float MaximumSpeed { get { return _boidMaximumSpeed; } set { _boidMaximumSpeed = value; } }
+    public BoidObject[] ManagedBoids { get { return _managedBoids; } private set { _managedBoids = value; } }
 
     public GameObject BoidLeader { get { return _boidLeader; } private set { _boidLeader = value; } }
 
@@ -29,8 +30,7 @@ public class BoidManager : MonoBehaviour {
     private float _boidNeighborRange, _boidSeperationRange, _boidSeparationWeight, _boidAlignmentWeight, _boidCohesionWeight, _boidAvoidanceWeight, _boidLeaderWeight;
    
 
-    private GameObject[] _managedBoidGOs;
-    private BoidSubordinate[] _managedBoidSubordinates;
+    private BoidObject[] _managedBoids;
 
     private void Awake () {
         if (_boidPrefabs.Length == 0)
@@ -48,20 +48,15 @@ public class BoidManager : MonoBehaviour {
     }
 
     private void _CreateBoids () {
-        if (_managedBoidGOs == null)
-            _managedBoidGOs = new GameObject[_boidCount];
-        if (_managedBoidSubordinates == null)
-            _managedBoidSubordinates = new BoidSubordinate[_boidCount];
+        if (_managedBoids == null)
+            _managedBoids = new BoidObject[_boidCount];
 
         for (int i = 0; i < _boidCount; i++) {
             var prefab = _GetBoidPrefab ();
-            var boid = Instantiate (prefab, transform.position, Quaternion.identity);
-            var boidSub = boid.AddComponent<BoidSubordinate> ();
+            var boid = Instantiate (prefab, transform.position * UnityEngine.Random.Range (-2f, 2f), Quaternion.identity);
+            boid.AddComponent<BoidSubordinate> ().SetBoidManager (this) ;
 
-            boidSub.SetBoidManager (this);
-
-            _managedBoidGOs[i] = boid;
-            _managedBoidSubordinates[i] = boidSub;
+            _managedBoids[i] = new BoidObject (boid);
         }
     }
 
@@ -71,10 +66,26 @@ public class BoidManager : MonoBehaviour {
     }
 
     private void _DestroyBoids () {
-        foreach (var boid in _managedBoidGOs) {
-            Destroy (boid);
+        foreach (var boid in _managedBoids) {
+            Destroy (boid.go);
         }
-        _managedBoidGOs = new GameObject[_boidCount];
-        _managedBoidSubordinates = new BoidSubordinate[_boidCount];
+        _managedBoids = new BoidObject[_boidCount];
+    }
+}
+
+public struct BoidObject {
+    public GameObject go;
+    public BoidSubordinate boidSubordinate;
+    public Rigidbody rigidbody;
+
+    public BoidObject (GameObject boid) {
+        go = boid;
+        boidSubordinate = boid.GetComponent<BoidSubordinate> ();
+        rigidbody = boid.GetComponent<Rigidbody> ();
+
+        if (boidSubordinate == null)
+            throw new NullReferenceException ("BoidObject: Gameobject does not have a BoidSubordinate component...");
+        if (rigidbody == null)
+            throw new NullReferenceException ("BoidObject: Gameobject does not have a Rigidbody component...");
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class BoidSubordinate : MonoBehaviour {
 
@@ -45,20 +46,37 @@ public class BoidSubordinate : MonoBehaviour {
         _ClampMaxSpeed (); 
     }
 
+    //private GameObject[] _GetNeighbors () {
+    //    // Get nieghbors
+    //    var neighborColliders = Physics.OverlapSphere (transform.position, _boidManager.NeighborRange);
+
+    //    var neighborList = new List<GameObject> ();
+    //    foreach (var col in neighborColliders) {
+    //        var go = col.gameObject;
+    //        var subordinate = go.GetComponent<BoidSubordinate> ();
+    //        // TO DO: Add in list of non boid neighbors that will add to the respulse obstacle avoidance
+
+    //        // Skip over objects that are not other boids and skip over self
+    //        if (subordinate != null && subordinate != this) {
+    //            neighborList.Add (go);
+    //        }
+    //    }
+
+    //    return neighborList.ToArray ();
+    //}
+
     private GameObject[] _GetNeighbors () {
         // Get nieghbors
-        var neighborColliders = Physics.OverlapSphere (transform.position, _boidManager.NeighborRange);
-
         var neighborList = new List<GameObject> ();
-        foreach (var col in neighborColliders) {
-            var go = col.gameObject;
-            var subordinate = go.GetComponent<BoidSubordinate> ();
+        var neighborRangeSqr = _boidManager.NeighborRange * _boidManager.NeighborRange;
+        foreach (var boid in _boidManager.ManagedBoids) {
+            
             // TO DO: Add in list of non boid neighbors that will add to the respulse obstacle avoidance
 
             // Skip over objects that are not other boids and skip over self
-            if (subordinate != null && subordinate != this) {
-                neighborList.Add (go);
-            }
+            var boidDistSqr = (boid.go.transform.position - transform.position).sqrMagnitude;
+            if ( boidDistSqr > 0f && boidDistSqr < neighborRangeSqr)
+                neighborList.Add (boid.go);
         }
 
         return neighborList.ToArray ();
@@ -83,7 +101,7 @@ public class BoidSubordinate : MonoBehaviour {
         cohesivePos /= neighbors.Length;
 
         var result = cohesivePos - transform.position;
-        return result;
+        return result.normalized;
     }
 
     private Vector3 _CalculateSeparationForce (GameObject[] neighbors) {
@@ -92,12 +110,14 @@ public class BoidSubordinate : MonoBehaviour {
         var repulsiveForce = Vector3.zero;
         var avgDistance = 0f;
         int tooCloseCount = 0;
+        var separationDistSqr = _boidManager.SeparationRange * _boidManager.SeparationRange;
 
         foreach (var boid in neighbors) {
-            float distance = Mathf.Abs (Vector3.Magnitude (transform.position - boid.transform.position));
-            if (distance < _boidManager.SeparationRange) {
-                repulsiveForce += transform.position - boid.transform.position;
-                avgDistance += distance;
+            var vectSub = transform.position - boid.transform.position;
+            float distanceSqr = vectSub.sqrMagnitude;
+            if (distanceSqr < separationDistSqr) {
+                repulsiveForce += vectSub;
+                avgDistance += distanceSqr;
                 tooCloseCount++;
             }
         }
@@ -108,7 +128,7 @@ public class BoidSubordinate : MonoBehaviour {
         repulsiveForce /= tooCloseCount;
         avgDistance /= tooCloseCount;
 
-        var weightPercentage = 1f - (avgDistance / _boidManager.SeparationRange);
+        var weightPercentage = 1f - (avgDistance / separationDistSqr);
 
         repulsiveForce = repulsiveForce.normalized * weightPercentage * _boidManager.SeparationWeight;
 

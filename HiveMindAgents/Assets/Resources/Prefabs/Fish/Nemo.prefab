@@ -37,7 +37,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4665295439716558}
   - component: {fileID: 54057716561565396}
-  - component: {fileID: 65267827311697798}
   m_Layer: 0
   m_Name: Nemo
   m_TagString: Untagged
@@ -126,15 +125,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &65267827311697798
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1440801933756840}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 2.293, z: 4.1814923}
-  m_Center: {x: 0, y: 0.07138574, z: -0.014744997}
