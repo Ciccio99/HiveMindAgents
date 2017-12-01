@@ -204,14 +204,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce0050996c36944aeb9f25655908fd71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _boidCount: 50
+  _boidCount: 75
   _boidMaximumSpeed: 12
-  _boidLeader: {fileID: 133920388}
+  _boidLeader: {fileID: 1490773305}
   _boidPrefabs:
   - {fileID: 1608234945468522, guid: 1b112205d965a479781122d6bb4b4a45, type: 2}
   _boidNeighborRange: 100
   _boidSeperationRange: 3
-  _boidAvoidanceDetectionRange: 30
+  _boidAvoidanceDetectionRange: 100
   _boidLeaderArrivalRange: 10
   _boidSeparationWeight: 80
   _boidAlignmentWeight: 15

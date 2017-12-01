@@ -169,7 +169,9 @@ public class BoidSubordinate : MonoBehaviour {
         
         var leaderForce = leaderVect * weightPercentage * _boidManager.LeadederWeight;
 
-        return leaderForce;
+        var final = leaderForce - _rigidbody.velocity;
+
+        return final;
     }
 
     private Vector3 _CalculateObjectAvoidanceForce () {
