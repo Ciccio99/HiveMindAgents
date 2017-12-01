@@ -8,6 +8,7 @@ public class BoidManager : MonoBehaviour {
     // Accessible properties for the boids to access
     public float NeighborRange { get { return _boidNeighborRange; } private set { _boidNeighborRange = value; } }
     public float SeparationRange { get { return _boidSeperationRange; } private set { _boidSeperationRange = value; } }
+    public float AvoidanceRange { get { return _boidAvoidanceDetectionRange; } private set { _boidAvoidanceWeight = value; } }
     public float SeparationWeight { get { return _boidSeparationWeight; } private set { _boidSeparationWeight = value; } }
     public float AlignmentWeight { get { return _boidAlignmentWeight; } private set { _boidAlignmentWeight = value; } }
     public float CohesionWeight { get { return _boidCohesionWeight; } private set { _boidCohesionWeight = value; } }
@@ -26,8 +27,12 @@ public class BoidManager : MonoBehaviour {
     private GameObject _boidLeader;
     [SerializeField]
     private GameObject[] _boidPrefabs;
+
     [SerializeField]
-    private float _boidNeighborRange, _boidSeperationRange, _boidSeparationWeight, _boidAlignmentWeight, _boidCohesionWeight, _boidAvoidanceWeight, _boidLeaderWeight;
+    private float _boidNeighborRange, _boidSeperationRange, _boidAvoidanceDetectionRange;
+
+    [SerializeField]
+    private float _boidSeparationWeight, _boidAlignmentWeight, _boidCohesionWeight, _boidAvoidanceWeight, _boidLeaderWeight;
    
 
     private BoidObject[] _managedBoids;

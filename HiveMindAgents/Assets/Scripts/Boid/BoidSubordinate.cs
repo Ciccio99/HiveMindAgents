@@ -27,10 +27,11 @@ public class BoidSubordinate : MonoBehaviour {
         // Calculate neighbor forces
         var finalForce = Vector3.zero;
 
+        finalForce += _CalculateSeparationForce (neighbors);
         finalForce += _CalculateCohesionForce (neighbors);
         finalForce += _CalculateAlignmentForce (neighbors);
-        finalForce += _CalculateSeparationForce (neighbors);
         finalForce += _CalculateLeaderForce ();
+        finalForce += _CalculateObjectAvoidanceForce ();
 
       
         // apply force to RB
@@ -40,8 +41,7 @@ public class BoidSubordinate : MonoBehaviour {
         _rigidbody.AddForce (finalForce);
 
         // set forward vector direction to current velocity
-        if (_rigidbody.velocity.normalized != Vector3.zero)
-            transform.rotation = Quaternion.LookRotation (_rigidbody.velocity.normalized);
+        transform.rotation = Quaternion.LookRotation (_rigidbody.velocity.normalized);
         
         _ClampMaxSpeed (); 
     }
@@ -158,5 +158,23 @@ public class BoidSubordinate : MonoBehaviour {
         var leaderForce = (_boidManager.BoidLeader.transform.position - transform.position).normalized * _boidManager.LeadederWeight;
 
         return leaderForce;
+    }
+
+    private Vector3 _CalculateObjectAvoidanceForce () {
+        RaycastHit hit;
+        if (Physics.Raycast (transform.position, transform.forward, out hit, _boidManager.AvoidanceRange)) {
+            var avoidanceDistSqr = _boidManager.AvoidanceRange * _boidManager.AvoidanceRange;
+            var vectSubtraction = transform.position - hit.point;
+            var distFromObjectSqr = vectSubtraction.sqrMagnitude;
+            // Something is in the way, steer towards a perpindculardirection of the current vector
+            var perpVect = Vector3.Cross (transform.forward, transform.up).normalized;
+
+            var weightPercentage = 1f - (distFromObjectSqr / avoidanceDistSqr);
+                
+            var force = perpVect * weightPercentage * _boidManager.AvoidanceWeight;
+            return force;
+        }
+
+        return Vector3.zero;
     }
 }

@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4207188281375452}
   - component: {fileID: 33100473858870614}
   - component: {fileID: 23558082866075512}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: TropicalFish12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37,7 +37,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4665295439716558}
   - component: {fileID: 54057716561565396}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Nemo
   m_TagString: Untagged
   m_Icon: {fileID: 0}

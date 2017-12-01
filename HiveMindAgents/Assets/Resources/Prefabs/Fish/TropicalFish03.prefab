@@ -21,8 +21,7 @@ GameObject:
   - component: {fileID: 4082566815148186}
   - component: {fileID: 33834375220503140}
   - component: {fileID: 23072056123551298}
-  - component: {fileID: 111548658319701320}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: TropicalFish03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +37,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4149505463116164}
   - component: {fileID: 54081637678261836}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: TropicalFish03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,17 +125,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!111 &111548658319701320
-Animation:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1584287470184238}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 0}
-  m_Animations: []
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
