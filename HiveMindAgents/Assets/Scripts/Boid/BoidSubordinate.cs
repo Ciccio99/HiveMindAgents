@@ -41,7 +41,9 @@ public class BoidSubordinate : MonoBehaviour {
         _rigidbody.AddForce (finalForce);
 
         // set forward vector direction to current velocity
-        transform.rotation = Quaternion.LookRotation (_rigidbody.velocity.normalized);
+        var lookRot = _rigidbody.velocity.normalized;
+        if (lookRot != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation (lookRot);
         
         _ClampMaxSpeed (); 
     }
@@ -154,24 +156,36 @@ public class BoidSubordinate : MonoBehaviour {
     private Vector3 _CalculateLeaderForce () {
         if (_boidManager.BoidLeader == null)
             return Vector3.zero;
+        var boidLeaderPos = _boidManager.BoidLeader.transform.position;
+
+        var arrivalDistanceSqr = _boidManager.LeaderArrivalRange * _boidManager.LeaderArrivalRange;
+
+        var deltaFromLeaderSqr = (transform.position - boidLeaderPos).sqrMagnitude;
+
+        // The closer the boid gets, the less the leader weight will be applied
+        var weightPercentage = deltaFromLeaderSqr / arrivalDistanceSqr;
+
+        var leaderVect = (_boidManager.BoidLeader.transform.position - transform.position).normalized;
         
-        var leaderForce = (_boidManager.BoidLeader.transform.position - transform.position).normalized * _boidManager.LeadederWeight;
+        var leaderForce = leaderVect * weightPercentage * _boidManager.LeadederWeight;
 
         return leaderForce;
     }
 
     private Vector3 _CalculateObjectAvoidanceForce () {
         RaycastHit hit;
+
         if (Physics.Raycast (transform.position, transform.forward, out hit, _boidManager.AvoidanceRange)) {
             var avoidanceDistSqr = _boidManager.AvoidanceRange * _boidManager.AvoidanceRange;
             var vectSubtraction = transform.position - hit.point;
             var distFromObjectSqr = vectSubtraction.sqrMagnitude;
-            // Something is in the way, steer towards a perpindculardirection of the current vector
-            var perpVect = Vector3.Cross (transform.forward, transform.up).normalized;
 
+            // Get the reflection of the current forward vector and the normal of the object hit point
+            var avoidVect = Vector3.Reflect (transform.forward, hit.normal).normalized;
             var weightPercentage = 1f - (distFromObjectSqr / avoidanceDistSqr);
+
                 
-            var force = perpVect * weightPercentage * _boidManager.AvoidanceWeight;
+            var force = avoidVect * weightPercentage * _boidManager.AvoidanceWeight;
             return force;
         }
 
