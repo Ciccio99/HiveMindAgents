@@ -96,14 +96,23 @@ public class BoidSubordinate : MonoBehaviour {
 
         var cohesivePos = new Vector3 ();
 
+        var cohesionDistSqr = _boidManager.NeighborRange * _boidManager.NeighborRange / 2;
+
         foreach (var boid in neighbors) {
             cohesivePos += boid.transform.position;
         }
 
         cohesivePos /= neighbors.Length;
 
-        var result = cohesivePos - transform.position;
-        return result.normalized;
+        var distFromCenter = (cohesivePos - transform.position).sqrMagnitude;
+
+        var weightPercentage = distFromCenter / cohesionDistSqr;
+
+        var cohesiveForce = (cohesivePos - transform.position).normalized;
+
+        cohesiveForce *= weightPercentage * _boidManager.CohesionWeight;
+
+        return cohesiveForce;
     }
 
     private Vector3 _CalculateSeparationForce (GameObject[] neighbors) {
@@ -154,7 +163,7 @@ public class BoidSubordinate : MonoBehaviour {
     }
 
     private Vector3 _CalculateLeaderForce () {
-        if (_boidManager.BoidLeader == null)
+        if (_boidManager.BoidLeader.transform.position == Vector3.zero)
             return Vector3.zero;
         var boidLeaderPos = _boidManager.BoidLeader.transform.position;
 
@@ -162,13 +171,18 @@ public class BoidSubordinate : MonoBehaviour {
 
         var deltaFromLeaderSqr = (transform.position - boidLeaderPos).sqrMagnitude;
 
+        // Notify manager when close to leader so that it changes to the next part of path
+        if (deltaFromLeaderSqr < arrivalDistanceSqr / 2f) {
+            _boidManager.NotifyLeaderArrival ();
+        }
+
         // The closer the boid gets, the less the leader weight will be applied
         var weightPercentage = deltaFromLeaderSqr / arrivalDistanceSqr;
 
-        var leaderVect = (_boidManager.BoidLeader.transform.position - transform.position).normalized;
+        var leaderVect = (boidLeaderPos - transform.position).normalized;
         
-        var leaderForce = leaderVect * weightPercentage * _boidManager.LeadederWeight;
-
+        //var leaderForce = leaderVect * weightPercentage * _boidManager.LeadederWeight;
+        var leaderForce = leaderVect * _boidManager.LeadederWeight;
         var final = leaderForce - _rigidbody.velocity;
 
         return final;

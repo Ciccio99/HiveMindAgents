@@ -18,6 +18,8 @@ public class BoidManager : MonoBehaviour {
     public float MaximumSpeed { get { return _boidMaximumSpeed; } set { _boidMaximumSpeed = value; } }
     public BoidObject[] ManagedBoids { get { return _managedBoids; } private set { _managedBoids = value; } }
 
+
+    public Vector3[] BoidPathPoints { get { return _boidPather != null ?_boidPather.pathVertices : null; } private set { _boidPather.pathVertices = value; }}
     public GameObject BoidLeader { get { return _boidLeader; } private set { _boidLeader = value; } }
 
     [SerializeField]
@@ -25,27 +27,56 @@ public class BoidManager : MonoBehaviour {
     [SerializeField]
     private float _boidMaximumSpeed = 10f;
     [SerializeField]
+    private BoidPather _boidPather;
+    [SerializeField]
     private GameObject _boidLeader;
     [SerializeField]
     private GameObject[] _boidPrefabs;
 
+    [Space(5)]
+    [Header("Boid Range Values")]
     [SerializeField]
-    private float _boidNeighborRange, _boidSeperationRange, _boidAvoidanceDetectionRange, _boidLeaderArrivalRange;
+    private float _boidNeighborRange;
+    [SerializeField]
+    private float _boidSeperationRange, _boidAvoidanceDetectionRange, _boidLeaderArrivalRange;
 
+    [Space (5)]
+    [Header ("Boid Weights")]
     [SerializeField]
-    private float _boidSeparationWeight, _boidAlignmentWeight, _boidCohesionWeight, _boidAvoidanceWeight, _boidLeaderWeight;
+    private float _boidSeparationWeight;
+    [SerializeField]
+    private float _boidAlignmentWeight, _boidCohesionWeight, _boidAvoidanceWeight, _boidLeaderWeight;
    
 
     private BoidObject[] _managedBoids;
 
+    private int currentPathPointIndex = 0;
+
     private void Awake () {
         if (_boidPrefabs.Length == 0)
             throw new NullReferenceException ("BoidManager: Missing boid prefab references...");
+
+        if (_boidPather != null && _boidPather.pathVertices.Length > 0) {
+            _boidLeader = new GameObject ("PathLeader");
+            _boidLeader.transform.position = _boidPather.pathVertices[currentPathPointIndex++];
+        }
     }
 
     // Mono Functions
     private void OnEnable () {
         _CreateBoids();
+    }
+
+    public void NotifyLeaderArrival () {
+        if (_boidPather == null || _boidPather.pathVertices.Length <= 0) return;
+
+        if (currentPathPointIndex >= _boidPather.pathVertices.Length && _boidPather.looping)
+            currentPathPointIndex = 0;
+        else if (currentPathPointIndex >= _boidPather.pathVertices.Length)
+            return;
+
+        _boidLeader.transform.position = _boidPather.pathVertices[currentPathPointIndex++];
+        
     }
 
     public void ResetBoids () {
@@ -59,11 +90,15 @@ public class BoidManager : MonoBehaviour {
 
         for (int i = 0; i < _boidCount; i++) {
             var prefab = _GetBoidPrefab ();
-            var boid = Instantiate (prefab, transform.position * UnityEngine.Random.Range (-2f, 2f), Quaternion.identity);
+            var startPos = new Vector3 (UnityEngine.Random.Range (-2f, 2f), UnityEngine.Random.Range (-2f, 2f), UnityEngine.Random.Range (-2f, 2f));
+            var boid = Instantiate (prefab, transform.position + startPos, Quaternion.identity);
             boid.AddComponent<BoidSubordinate> ().SetBoidManager (this) ;
 
             _managedBoids[i] = new BoidObject (boid);
         }
+
+        Camera.main.transform.SetParent (_managedBoids[0].go.transform);
+        Camera.main.transform.localPosition = Vector3.forward * -4f;
     }
 
     private GameObject _GetBoidPrefab (int index = -1) {
@@ -77,6 +112,7 @@ public class BoidManager : MonoBehaviour {
         }
         _managedBoids = new BoidObject[_boidCount];
     }
+
 }
 
 public struct BoidObject {
@@ -94,4 +130,6 @@ public struct BoidObject {
         if (rigidbody == null)
             throw new NullReferenceException ("BoidObject: Gameobject does not have a Rigidbody component...");
     }
+
+
 }
