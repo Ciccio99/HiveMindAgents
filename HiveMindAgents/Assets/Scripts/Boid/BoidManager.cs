@@ -1,5 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿/*
+    Author: Alberto Scicali
+    Central boid manager that controls the weights and values associated with boids
+*/
+
 using UnityEngine;
 using System;
 
@@ -17,11 +20,10 @@ public class BoidManager : MonoBehaviour {
     public float LeadederWeight { get { return _boidLeaderWeight; } private set { _boidLeaderWeight = value; } }
     public float MaximumSpeed { get { return _boidMaximumSpeed; } set { _boidMaximumSpeed = value; } }
     public BoidObject[] ManagedBoids { get { return _managedBoids; } private set { _managedBoids = value; } }
-
-
     public Vector3[] BoidPathPoints { get { return _boidPather != null ?_boidPather.pathVertices : null; } private set { _boidPather.pathVertices = value; }}
     public GameObject BoidLeader { get { return _boidLeader; } private set { _boidLeader = value; } }
 
+    // Serialized fields to be exposed to inspector
     [SerializeField]
     private int _boidCount;
     [SerializeField]
@@ -49,7 +51,6 @@ public class BoidManager : MonoBehaviour {
    
 
     private BoidObject[] _managedBoids;
-
     private int currentPathPointIndex = 0;
 
     private void Awake () {
@@ -62,11 +63,14 @@ public class BoidManager : MonoBehaviour {
         }
     }
 
-    // Mono Functions
     private void OnEnable () {
         _CreateBoids();
     }
 
+    /// <summary>
+    /// Notifies that a boid has arrived at the leader. If the leader is associated with a path then the leader will be swapped with the next path vertex
+    /// 
+    /// </summary>
     public void NotifyLeaderArrival () {
         if (_boidPather == null || _boidPather.pathVertices.Length <= 0) return;
 
@@ -79,11 +83,18 @@ public class BoidManager : MonoBehaviour {
         
     }
 
+    /// <summary>
+    /// Resets the boids.
+    /// </summary>
     public void ResetBoids () {
         _DestroyBoids();
         _CreateBoids();
     }
 
+    /// <summary>
+    /// Creates and instantiates the boid objects.
+    /// THe boids are spawned randomly around a 4x4x4 cube around the manager.
+    /// </summary>
     private void _CreateBoids () {
         if (_managedBoids == null)
             _managedBoids = new BoidObject[_boidCount];
@@ -101,11 +112,19 @@ public class BoidManager : MonoBehaviour {
         Camera.main.transform.localPosition = Vector3.forward * -4f;
     }
 
+    /// <summary>
+    /// Gets a random prefab from the list of boids prefabs.
+    /// </summary>
+    /// <returns>The BOID prefab.</returns>
+    /// <param name="index">Index.</param>
     private GameObject _GetBoidPrefab (int index = -1) {
         int randIndex = UnityEngine.Random.Range (0, _boidPrefabs.Length);
         return _boidPrefabs[randIndex];
     }
 
+    /// <summary>
+    /// Destroys the boids.
+    /// </summary>
     private void _DestroyBoids () {
         foreach (var boid in _managedBoids) {
             Destroy (boid.go);
@@ -115,6 +134,9 @@ public class BoidManager : MonoBehaviour {
 
 }
 
+/// <summary>
+/// Maintains information about a spawned boid
+/// </summary>
 public struct BoidObject {
     public GameObject go;
     public BoidSubordinate boidSubordinate;

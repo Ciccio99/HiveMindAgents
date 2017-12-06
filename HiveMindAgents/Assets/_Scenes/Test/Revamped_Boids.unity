@@ -299,7 +299,7 @@ MonoBehaviour:
   _boidSeparationWeight: 90
   _boidAlignmentWeight: 20
   _boidCohesionWeight: 50
-  _boidAvoidanceWeight: 175
+  _boidAvoidanceWeight: 250
   _boidLeaderWeight: 15
 --- !u!4 &181405024
 Transform:

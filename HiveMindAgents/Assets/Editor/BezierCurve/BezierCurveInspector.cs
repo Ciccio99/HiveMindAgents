@@ -37,6 +37,11 @@ public class BezierCurveInspector : Editor {
 		curve.SetLineRendererCurve ();
 	}
 
+    /// <summary>
+    /// Shows the point and sets its position based on the handler position.
+    /// </summary>
+    /// <returns>The point.</returns>
+    /// <param name="index">Index.</param>
 	private Vector3 ShowPoint (int index) {
 		Vector3 point = handleTransform.TransformPoint(curve.points[index]);
 		EditorGUI.BeginChangeCheck ();

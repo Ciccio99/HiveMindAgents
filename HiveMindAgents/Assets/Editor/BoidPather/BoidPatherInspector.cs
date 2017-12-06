@@ -25,6 +25,10 @@ public class BoidPatherInspector : Editor {
         }
     }
 
+    /// <summary>
+    /// Shows the points.
+    /// </summary>
+    /// <returns>The points.</returns>
     private Vector3[] ShowPoints () {
         for (int i = 0; i < _pather.pathVertices.Length; i++) {
             //var p = _handleTransform.TransformPoint (_pather.pathVertices[i]);

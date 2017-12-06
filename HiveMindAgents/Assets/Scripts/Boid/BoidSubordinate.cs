@@ -12,7 +12,6 @@ public class BoidSubordinate : MonoBehaviour {
         _rigidbody = GetComponent<Rigidbody> ();
     }
 
-    // Update is called once per frame
     void FixedUpdate () {
         _BoidMovementLoop ();
 	}
@@ -21,6 +20,9 @@ public class BoidSubordinate : MonoBehaviour {
         _boidManager = bm;
     }
 
+    /// <summary>
+    /// BOIDs' the movement loop.
+    /// </summary>
     private void _BoidMovementLoop () {
         var neighbors = _GetNeighbors ();
 
@@ -48,6 +50,10 @@ public class BoidSubordinate : MonoBehaviour {
         _ClampMaxSpeed (); 
     }
 
+    /// <summary>
+    /// Gets the neighbors with sphere colliders
+    /// </summary>
+    /// <returns>The neighbors.</returns>
     //private GameObject[] _GetNeighbors () {
     //    // Get nieghbors
     //    var neighborColliders = Physics.OverlapSphere (transform.position, _boidManager.NeighborRange);
@@ -67,6 +73,10 @@ public class BoidSubordinate : MonoBehaviour {
     //    return neighborList.ToArray ();
     //}
 
+    /// <summary>
+    /// Gets the neighbors attached to the BoidManager
+    /// </summary>
+    /// <returns>The neighbors.</returns>
     private GameObject[] _GetNeighbors () {
         // Get nieghbors
         var neighborList = new List<GameObject> ();
@@ -84,6 +94,9 @@ public class BoidSubordinate : MonoBehaviour {
         return neighborList.ToArray ();
     }
 
+    /// <summary>
+    /// Clamps the max speed of the boid's vector.
+    /// </summary>
     private void _ClampMaxSpeed () {
         // Limit Speed
         if (Vector3.Magnitude (_rigidbody.velocity) > _boidManager.MaximumSpeed) {
@@ -91,6 +104,11 @@ public class BoidSubordinate : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Calculates the cohesion force.
+    /// </summary>
+    /// <returns>The cohesion force.</returns>
+    /// <param name="neighbors">Neighbors.</param>
     private Vector3 _CalculateCohesionForce (GameObject[] neighbors) {
         if (neighbors.Length == 0) return Vector3.zero;
 
@@ -115,6 +133,11 @@ public class BoidSubordinate : MonoBehaviour {
         return cohesiveForce;
     }
 
+    /// <summary>
+    /// Calculates the separation force.
+    /// </summary>
+    /// <returns>The separation force.</returns>
+    /// <param name="neighbors">Neighbors.</param>
     private Vector3 _CalculateSeparationForce (GameObject[] neighbors) {
         if (neighbors.Length == 0) return Vector3.zero;
 
@@ -146,6 +169,11 @@ public class BoidSubordinate : MonoBehaviour {
         return repulsiveForce;
     }
 
+    /// <summary>
+    /// Calculates the alignment force.
+    /// </summary>
+    /// <returns>The alignment force.</returns>
+    /// <param name="neighbors">Neighbors.</param>
     private Vector3 _CalculateAlignmentForce (GameObject[] neighbors) {
         if (neighbors.Length == 0) return Vector3.zero;
 
@@ -162,6 +190,10 @@ public class BoidSubordinate : MonoBehaviour {
         return steerForce;
     }
 
+    /// <summary>
+    /// Calculates the leader force.
+    /// </summary>
+    /// <returns>The leader force.</returns>
     private Vector3 _CalculateLeaderForce () {
         if (_boidManager.BoidLeader.transform.position == Vector3.zero)
             return Vector3.zero;
@@ -188,6 +220,10 @@ public class BoidSubordinate : MonoBehaviour {
         return final;
     }
 
+    /// <summary>
+    /// Calculates the object avoidance force.
+    /// </summary>
+    /// <returns>The object avoidance force.</returns>
     private Vector3 _CalculateObjectAvoidanceForce () {
         RaycastHit hit;
 

@@ -25,6 +25,9 @@ public class BezierCurve : MonoBehaviour {
 		SetLineRendererCurve ();
 	}
 
+    /// <summary>
+    /// Reset this bezier curve.
+    /// </summary>
 	public void Reset () {
 		points = new Vector3[] {
 			new Vector3 (1f, 0f, 0f),
@@ -34,10 +37,18 @@ public class BezierCurve : MonoBehaviour {
 		_lineRenderer = GetComponent<LineRenderer> () ?? gameObject.AddComponent<LineRenderer> ();
 	}
 
+    /// <summary>
+    /// Gets the associated bezier point.
+    /// </summary>
+    /// <returns>The point.</returns>
+    /// <param name="t">T = a value between 0-1 inclusive</param>
 	public Vector3 GetPoint (float t) {
 		return transform.TransformPoint (Bezier.GetPoint (points[0], points[1], points[2], t));
 	}
 
+    /// <summary>
+    /// Sets the line renderer curve.
+    /// </summary>
 	public void SetLineRendererCurve () {
         _lineRenderer = GetComponent<LineRenderer> () ?? gameObject.AddComponent<LineRenderer> ();
 		_bezierVertices = new Vector3[lineSteps + 1];
@@ -52,11 +63,18 @@ public class BezierCurve : MonoBehaviour {
 		_lineRenderer.SetPositions (_bezierVertices);
 	}
 
+    /// <summary>
+    /// Sets the main points.
+    /// </summary>
+    /// <param name="start">Start.</param>
+    /// <param name="mid">Middle.</param>
+    /// <param name="end">End.</param>
 	public void SetMainPoints (Vector3 start, Vector3 mid, Vector3 end) {
 		points[0] = start;
 		points[1] = mid;
 		points[2] = end;
 	}
+
 
     private void OnDrawGizmos()
     {
