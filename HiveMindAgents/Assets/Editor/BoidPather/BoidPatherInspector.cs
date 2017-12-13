@@ -25,6 +25,8 @@ public class BoidPatherInspector : Editor {
         }
     }
 
+
+
     /// <summary>
     /// Shows the points.
     /// </summary>
@@ -35,6 +37,7 @@ public class BoidPatherInspector : Editor {
             var p = _pather.pathVertices[i];
             // Called so that Unity "Remembers" the last actions so you can undo
             EditorGUI.BeginChangeCheck ();
+
             p = Handles.DoPositionHandle (p, _handleRotation);
             if (EditorGUI.EndChangeCheck ()) {
                 Undo.RecordObject (_pather, "Move Points");

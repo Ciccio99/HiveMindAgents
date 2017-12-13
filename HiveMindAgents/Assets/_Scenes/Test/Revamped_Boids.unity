@@ -292,9 +292,10 @@ MonoBehaviour:
   _boidLeader: {fileID: 0}
   _boidPrefabs:
   - {fileID: 1608234945468522, guid: 1b112205d965a479781122d6bb4b4a45, type: 2}
+  _boidFollowCamera: {fileID: 1312772083}
   _boidNeighborRange: 100
   _boidSeperationRange: 3
-  _boidAvoidanceDetectionRange: 10
+  _boidAvoidanceDetectionRange: 50
   _boidLeaderArrivalRange: 10
   _boidSeparationWeight: 90
   _boidAlignmentWeight: 20
@@ -347,6 +348,7 @@ MonoBehaviour:
   _boidLeader: {fileID: 1490773305}
   _boidPrefabs:
   - {fileID: 1440801933756840, guid: b1611c71f847e4e108b27b8a428ff226, type: 2}
+  _boidFollowCamera: {fileID: 0}
   _boidNeighborRange: 100
   _boidSeperationRange: 5
   _boidAvoidanceDetectionRange: 75
@@ -731,6 +733,7 @@ MonoBehaviour:
   - {fileID: 1962713662846058, guid: 485d9279ef46f4ed5bb87a82d0cd83c0, type: 2}
   - {fileID: 1573911659069588, guid: 0cf0e0675fa4144f8afaeeddb16b1fc6, type: 2}
   - {fileID: 1886222462583378, guid: 23323ea50e5aa4a40b979bd85483ca5e, type: 2}
+  _boidFollowCamera: {fileID: 0}
   _boidNeighborRange: 1
   _boidSeperationRange: 1
   _boidAvoidanceDetectionRange: 0

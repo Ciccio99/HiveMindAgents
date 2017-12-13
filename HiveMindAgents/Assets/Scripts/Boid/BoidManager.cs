@@ -34,19 +34,25 @@ public class BoidManager : MonoBehaviour {
     private GameObject _boidLeader;
     [SerializeField]
     private GameObject[] _boidPrefabs;
+    [SerializeField]
+    private Camera _boidFollowCamera;
 
     [Space(5)]
     [Header("Boid Range Values")]
     [SerializeField]
+    [Range(0,1000)]
     private float _boidNeighborRange;
     [SerializeField]
+    [Range (0, 1000)]
     private float _boidSeperationRange, _boidAvoidanceDetectionRange, _boidLeaderArrivalRange;
 
     [Space (5)]
     [Header ("Boid Weights")]
     [SerializeField]
+    [Range (0, 1000)]
     private float _boidSeparationWeight;
     [SerializeField]
+    [Range (0, 1000)]
     private float _boidAlignmentWeight, _boidCohesionWeight, _boidAvoidanceWeight, _boidLeaderWeight;
    
 
@@ -108,8 +114,12 @@ public class BoidManager : MonoBehaviour {
             _managedBoids[i] = new BoidObject (boid);
         }
 
-        Camera.main.transform.SetParent (_managedBoids[0].go.transform);
-        Camera.main.transform.localPosition = Vector3.forward * -4f;
+        if (_boidFollowCamera != null) {
+            var folowCam = _boidFollowCamera.gameObject.AddComponent <BoidFollowCamera>();
+            folowCam.SetFollowTargetObject (_managedBoids[0].go);
+        }
+
+       
     }
 
     /// <summary>
